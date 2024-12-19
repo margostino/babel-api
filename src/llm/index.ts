@@ -1,0 +1,1 @@
+export { getChatCompletion } from './getChatCompletion'

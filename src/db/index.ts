@@ -1,0 +1,1 @@
+export { searchAssets } from './searchAssets'
