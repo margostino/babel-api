@@ -1,2 +1,2 @@
-export { completionController } from './completionController'
+export { getCompletionController } from './getCompletionController'
 export { pingController } from './pingController'

@@ -1,20 +1,33 @@
 import { ChatCompletionMessageParam } from 'openai/resources'
 import { getPrompt } from '../assistant'
-import { Asset } from '../schemas'
+import { getChatHistory } from '../db'
+import { CompletionAsset } from '../schemas'
 
-export const getMessagesForAssistant = ({ assets, input }: { assets: Asset[]; input: string }) => {
+export const getMessagesForAssistant = ({
+  assets,
+  input,
+}: {
+  assets: CompletionAsset[]
+  input: string
+}) => {
   const systemPrompt = getPrompt()
 
-  const memories = assets
+  const context = assets
     .map((asset) => `CATEGORY: ${asset.category}\nCONTENT: ${asset.content}\n`)
     .join('\n')
 
+  const chatHistory = getChatHistory()
+
   return [
     { role: 'system', content: systemPrompt },
-    { role: 'user', content: `Query: ${input}` },
+    { role: 'user', content: `QUERY: ${input}` },
     {
       role: 'user',
-      content: `Memories: ${memories}`,
+      content: `CHAT HISTORY: ${JSON.stringify(chatHistory)}`,
+    },
+    {
+      role: 'user',
+      content: `CONTEXT: ${context}`,
     },
   ] as ChatCompletionMessageParam[]
 }

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const CATEGORIES = ['INBOX', 'AREAS', 'PROJECTS', 'RESOURCES', 'ARCHIVES'] as const
+export const CATEGORIES = ['INBOX', 'AREAS', 'PROJECTS', 'RESOURCES', 'ARCHIVE'] as const
 
 export const CategorySchema = z.preprocess((category) => {
   if (typeof category === 'string') {

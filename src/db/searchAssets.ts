@@ -1,10 +1,15 @@
 import weaviate from 'weaviate-client'
-import { OPENAI_API_KEY, VECTOR_SEARCH_RESULT_SCORE_THRESHOLD } from '../constants'
-import { Asset } from '../schemas'
-import { objectToAssets } from '../transformation/objectToAssets'
+import {
+  OPENAI_API_KEY,
+  VECTOR_SEARCH_ALPHA,
+  VECTOR_SEARCH_LIMIT,
+  VECTOR_SEARCH_RESULT_SCORE_THRESHOLD,
+} from '../constants'
+import { CompletionAsset } from '../schemas'
+import { objectToCompletionAssets } from '../transformation'
 
-export const searchAssets = async (input: string): Promise<Asset[]> => {
-  // TODO: config file
+export const searchAssets = async (input: string): Promise<CompletionAsset[]> => {
+  // TODO: config file and create client once
   const client = await weaviate.connectToCustom({
     httpHost: 'localhost',
     httpPort: 8585,
@@ -16,14 +21,15 @@ export const searchAssets = async (input: string): Promise<Asset[]> => {
 
   const collection = await client.collections.get('Babel')
 
+  // TODO: config
   const { objects } = await collection.query.hybrid(input, {
-    limit: 20,
-    // alpha: alpha,
+    limit: VECTOR_SEARCH_LIMIT,
+    alpha: VECTOR_SEARCH_ALPHA,
     returnMetadata: ['score', 'explainScore'],
     returnProperties: ['content', 'category'],
   })
 
-  const assets = objectToAssets(
+  const assets = objectToCompletionAssets(
     objects.filter(
       (object) =>
         object.metadata?.score && object.metadata?.score > VECTOR_SEARCH_RESULT_SCORE_THRESHOLD
